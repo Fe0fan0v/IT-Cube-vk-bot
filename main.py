@@ -3,6 +3,7 @@ from vk_api.bot_longpoll import VkBotLongPoll, VkBotEventType
 from vk_api.utils import get_random_id
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 from working_table import Table
+from datetime import datetime
 
 t = Table('1eOHupW8CiZ9bJn0D7DQVjX1nDHssO97y05DhyXpBHxc')
 
@@ -34,6 +35,17 @@ def close_keyboard():
     return keyboard
 
 
+def greeting(time):
+    if 5 < time.hour < 12:
+        return 'Доброе утро'
+    elif 12 < time.hour < 17:
+        return 'Добрый день'
+    elif 17 < time.hour < 24:
+        return 'Добрый вечер'
+    else:
+        return 'Доброй ночи'
+
+
 def main():
     vk_session = vk_api.VkApi(token='7134ec534a2db42ab0f89995ff9d70322962a332aa0629077663f16a828435f466c18e42e9f4ed6e7cddc')
     longpoll = VkBotLongPoll(vk_session, '182910816')
@@ -47,10 +59,11 @@ def main():
             if message['text'].lower() == 'привет':
                 user_name = vk_session.method('users.get', {'user_id': user_id})[0]['first_name']
                 user_surname = vk_session.method('users.get', {'user_id': user_id})[0]['last_name']
+                time = datetime.now()
                 vk.messages.send(
                     user_id=user_id,
                     random_id=get_random_id(),
-                    message=f'Здравствуйте, {user_name} {user_surname}',
+                    message=f'{greeting(time)}, {user_name} {user_surname}',
                     keyboard=create_main_keyboard()
                 )
             elif message['text'].lower() == 'закрыть':
